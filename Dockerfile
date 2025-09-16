@@ -16,7 +16,9 @@ COPY . /app
 # Nginx config and start script
 COPY deploy/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/start.sh /start.sh
-RUN chmod +x /start.sh
+# Normalize line endings to LF for Linux runtime and ensure execute bit
+RUN sed -i 's/\r$//' /start.sh /etc/nginx/nginx.conf \
+ && chmod +x /start.sh
 
 # Expose Nginx port (App Service for Containers → set WEBSITES_PORT=8080)
 EXPOSE 8080

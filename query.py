@@ -3,7 +3,6 @@ import os, re, json, time, requests, math
 from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
 from store import build_store_from_env
-import re
 import streamlit as st
 from streamlit.components.v1 import html as st_html
 try:

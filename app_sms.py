@@ -1,3 +1,4 @@
+"""FastAPI SMS webhook and analysis service (behavior preserved)."""
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse, HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -5,13 +6,15 @@ from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Optional
 import asyncio
 from store import build_store_from_env
-import os, json, requests
+import os, json, requests, logging
 try:
     from openai import AzureOpenAI
     _HAS_AZURE_OPENAI = True
 except Exception:
     AzureOpenAI = None
     _HAS_AZURE_OPENAI = False
+
+logger = logging.getLogger("app_sms")
 
 app = FastAPI()
 
@@ -34,7 +37,7 @@ _inbox_lock = asyncio.Lock()
 # SSE subscribers
 _subscribers: List[asyncio.Queue] = []
 
-async def _broadcast(event: Dict):
+async def _broadcast(event: Dict) -> None:
     dead = []
     for q in list(_subscribers):
         try:
@@ -321,7 +324,7 @@ def _auto_analyze_blocking(message: str) -> Optional[str]:
     except Exception:
         return None
 
-async def _auto_analyze(message: str):
+async def _auto_analyze(message: str) -> None:
     try:
         # Offload blocking network calls to a worker thread to avoid blocking the event loop
         aid = await asyncio.to_thread(_auto_analyze_blocking, message)
@@ -453,7 +456,7 @@ async def set_notify_config(request: Request):
     except Exception as e:
         return JSONResponse({"ok": False, "error": str(e)}, status_code=400)
 
-async def _init_next_id_from_store():
+async def _init_next_id_from_store() -> None:
     global _next_id
     try:
         if STORE is not None:

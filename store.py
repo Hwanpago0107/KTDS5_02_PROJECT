@@ -1,14 +1,25 @@
-import os
+"""Store factory.
+
+This module keeps store selection logic minimal and stable. It returns a
+SQLite-backed store when available, or ``None`` to safely fall back to the
+in-memory code paths used elsewhere in the app.
+"""
+
+from typing import Optional
+
 from sqlite_store import SQLiteStore
 
 
-def build_store_from_env():
-    """
-    SQLite 전용 저장소 생성. 실패 시 None 반환.
-    - STORAGE_BACKEND는 무시하고, SQLITE_PATH만 사용합니다.
+def build_store_from_env() -> Optional[SQLiteStore]:
+    """Build a store instance from environment.
+
+    Behavior is intentionally simple: always attempt SQLite initialization and
+    return ``None`` if anything fails so that the rest of the application can
+    operate in in-memory mode without raising.
     """
     try:
         store = SQLiteStore()
         return store if store.enabled else None
     except Exception:
         return None
+

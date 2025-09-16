@@ -1,3 +1,9 @@
+"""SQLite-backed persistence for SMS inbox and analysis records.
+
+Behavior is kept identical to the original implementation; this refactor adds
+type hints, docstrings, and small structural cleanups without changing logic.
+"""
+
 import os
 import json
 import sqlite3
@@ -10,8 +16,9 @@ def _env(name: str, default: Optional[str] = None) -> Optional[str]:
 
 
 class SQLiteStore:
-    """
-    Lightweight SQLite store with the same interface used across the app:
+    """Lightweight SQLite store with a stable interface.
+
+    Methods provided (unchanged):
       - save_analysis(rec)
       - get_analysis_page(page, page_size) -> (items, total)
       - add_sms(id_num, row)
@@ -23,7 +30,7 @@ class SQLiteStore:
       SQLITE_PATH=/home/data/app.db  (Azure App Service Linux: use /home)
     """
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: Optional[str] = None) -> None:
         self._enabled = False
         path = db_path or _env("SQLITE_PATH") or os.path.join(os.getcwd(), "app.db")
         # Ensure parent dir exists
@@ -42,7 +49,7 @@ class SQLiteStore:
     def enabled(self) -> bool:
         return bool(self._enabled)
 
-    def _ensure_schema(self):
+    def _ensure_schema(self) -> None:
         cur = self._conn.cursor()
         # analysis table
         cur.execute(

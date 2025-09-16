@@ -4,7 +4,7 @@ Param(
   [Parameter(Mandatory=$true)][string]$AppName,
   [Parameter(Mandatory=$true)][string]$ImageName,
   [string]$ImageTag = 'v2',
-  [string]$BuildContext = '.\\project_ktds',
+  [string]$BuildContext = '.\\KTDS5_02_PROJECT',
   [switch]$SetAppSettings,
   [string]$AoaiChatDeployment = 'gpt-4-1',
   [string]$AoaiEmbedDeployment = 'text-embedding-3-small',
